@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad de Animales - Selección Digital</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #e3f2fd; /* Azul claro para las tarjetas */
+            --primary-color: #007bff;
+            --text-dark: #2c3e50;
+            --success-color: #27ae60;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; padding: 15px; 
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        h1 { color: var(--text-dark); margin-top: 40px; margin-bottom: 10px; }
+        .instrucciones { color: #7f8c8d; margin-bottom: 10px; text-align: center; }
+        
+        #contador-info {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            font-weight: bold;
+            color: var(--primary-color);
+            border: 1px solid #d1e3f0;
+        }
+#mi-animal-panel {
+    display: none;
+
+    background: white;
+    margin-bottom: 20px;
+    padding: 15px;
+
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+    text-align: center;
+
+    width: 100%;
+    max-width: 400px;
+}
+
+#mi-animal-panel h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+#btn-ver-mi-animal {
+    background: #27ae60;
+    color: white;
+    border: none;
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 1rem;
+}
+
+#btn-ver-mi-animal:hover {
+    background: #219150;
+}
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 25px; width: 100%; max-width: 1100px; 
+            perspective: 1000px;
+        }
+
+        .tarjeta-container {
+            aspect-ratio: 2/3;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tarjeta-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Sombra un poco más fuerte */
+            border-radius: 15px;
+        }
+
+        .ocupada .tarjeta-inner {
+            transform: rotateY(180deg);
+            cursor: default;
+        }
+        
+
+        .tarjeta-front, .tarjeta-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .tarjeta-front {
+            background-color: var(--card-bg);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #bbdefb; /* Borde azul un poco más oscuro */
+            box-sizing: border-box;
+        }
+.tarjeta-back {
+
+    background-color: #bdc3c7;
+
+    transform: rotateY(180deg);
+
+}
+        .tarjeta-front h3 {
+
+    color: #2c3e50;
+
+    text-align: center;
+
+    margin: 0 0 6px 0;
+
+    font-size: 1.4rem;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    border-bottom: 2px solid #e0e0e0;
+
+    padding-bottom: 8px;
+
+}
+.tarjeta-front ul {
+
+    padding-left: 15px;
+
+    font-size: 0.9rem;
+
+    color: #34495e;
+
+    margin: 0;
+
+    line-height: 1.5;
+
+}
+
+.tarjeta-front li {
+
+    margin-bottom: 5px;
+
+}
+
+        .tarjeta-back img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        #btn-reset {
+            position: fixed; top: 10px; right: 10px; z-index: 2000; 
+            padding: 8px 15px; background: #e74c3c; color: white; 
+            border: none; border-radius: 5px; cursor: pointer; 
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #btn-reset:hover { opacity: 1; }
+
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000; padding: 20px;
+            box-sizing: border-box;
+            align-items: center; justify-content: center;
+        }
+
+        .contenido-modal {
+            background: white; 
+            width: 90%;
+            max-width: 450px; 
+            padding: 40px; 
+            border-radius: 25px; 
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .modal-titulo {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .modal-lista {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+
+        .contenedor-botones {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn { 
+            flex: 1;
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: transform 0.2s;
+        }
+
+        .btn:active { transform: scale(0.95); }
+        .btn-seleccionar { background: var(--success-color); color: white; }
+        .btn-regresar { background: #eee; color: #666; }
+     .animal-img {
+
+    width: 100%;
+
+    height: 45%;
+
+    object-fit: contain;
+
+    margin-bottom: 12px;
+
+}
+#modal-animal-imagen {
+
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+    margin-bottom: 20px;
+
+}
+.overlay {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.65);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: opacity 0.3s ease;
+
+    z-index: 2500;
+
+}
+
+.overlay.active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+#footer {
+
+    margin-top: 50px;
+
+    padding: 20px;
+
+    text-align: center;
+
+    color: #7f8c8d;
+
+    font-size: 0.9rem;
+
+}
+    </style>
+</head>
+<body>
+
+    <button id="btn-reset" onclick="reiniciarTodo()">Reiniciar Sistema (Admin)</button>
+
+    <h1>Selecciona tu Animal</h1>
+    <p id="instruccion-texto" class="instrucciones">Toca un animal para ver sus detalles y elegirlo.</p>
+    
+    <div id="contador-info">Animales elegidos: <span id="contador-numero">0</span> / 5</div>
+<div id="mi-animal-panel">
+
+    <h3 id="titulo-mi-animal">
+        🐾 Tu animal
+    </h3>
+
+    <button id="btn-ver-mi-animal">
+        Ver mi tarjeta
+    </button>
+
+</div>
+    <div id="contenedor" class="grid"></div>
+    <div id="overlay" class="overlay"></div>
+    <div id="modal">
+        <div class="contenido-modal">
+
+    <img id="modal-animal-imagen" class="animal-img" src="" alt="">
+
+    <h2 id="modal-animal-nombre" class="modal-titulo"></h2>
+    <ul id="modal-animal-rasgos" class="modal-lista"></ul>
+            
+            <div class="contenedor-botones">
+                <button class="btn btn-seleccionar" onclick="confirmarSeleccion()">Seleccionar</button>
+                <button class="btn btn-regresar" onclick="cerrarModal()">Regresar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3cwN02Qy2oK1ZfZPOhb2Jl4Njcqcx80M",
+            authDomain: "tarjetas-de-animales.firebaseapp.com",
+            databaseURL: "https://tarjetas-de-animales-default-rtdb.firebaseio.com",
+            projectId: "tarjetas-de-animales",
+            storageBucket: "tarjetas-de-animales.firebasestorage.app",
+            messagingSenderId: "352994228151",
+            appId: "1:352994228151:web:b99c42a994f2ed8a145a32",
+            measurementId: "G-50N5FQ04S0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const animales = [
+    { 
+        id: 1, 
+        nombre: "León",
+        imagen: "assets/leon.png",
+        rasgos: [
+            "Melena abundante",
+            "Vive en manadas",
+            "Gran rugido",
+            "Depredador alfa"
+        ]
+    },
+
+    { 
+        id: 2, 
+        nombre: "Elefante",
+        imagen: "assets/elefante.png",
+        rasgos: [
+            "Colmillos de marfil",
+            "Gran trompa",
+            "Piel gruesa",
+            "Memoria excelente"
+        ]
+    },
+
+    { 
+        id: 3, 
+        nombre: "Delfín",
+        imagen: "assets/delfin.png",
+        rasgos: [
+            "Ecolocalización",
+            "Muy inteligente",
+            "Piel lisa",
+            "Nado veloz"
+        ]
+    },
+
+    { 
+        id: 4, 
+        nombre: "Búho",
+        imagen: "assets/buho.png",
+        rasgos: [
+            "Visión nocturna",
+            "Giro de cuello 270°",
+            "Vuelo silencioso",
+            "Cazador de roedores"
+        ]
+    },
+
+    { 
+        id: 5, 
+        nombre: "Tigre",
+        imagen: "assets/tigre.png",
+        rasgos: [
+            "Rayas únicas",
+            "Nadador experto",
+            "Solitario",
+            "Fuerza extrema"
+        ]
+    }
+];
+
+        document.getElementById('contador-info').innerHTML = `Animales elegidos: <span id="contador-numero">0</span> / ${animales.length}`;
+
+        let idSeleccionadoGlobal = null;
+
+    function verificarEleccionPrevia() {
+
+    if (localStorage.getItem('animal_elegido')) {
+
+        document.getElementById('instruccion-texto').innerText =
+            "Ya tienes tu animal asignado.";
+
+        document.getElementById('instruccion-texto').style.color =
+            "#27ae60";
+
+        mostrarPanelMiAnimal();
+
+    } else {
+
+        document.getElementById('instruccion-texto').innerText =
+            "Toca un animal para ver sus detalles y elegirlo.";
+
+        document.getElementById('instruccion-texto').style.color =
+            "#7f8c8d";
+
+        document.getElementById("mi-animal-panel").style.display =
+            "none";
+
+    }
+}
+function mostrarPanelMiAnimal() {
+    document.getElementById("mi-animal-panel").style.display = "block";
+}
+        const contenedor = document.getElementById('contenedor');
+        const overlay = document.getElementById("overlay");
+        animales.forEach(a => {
+            const container = document.createElement('div');
+            container.id = "card-container-" + a.id;
+            container.className = "tarjeta-container";
+            container.innerHTML = `
+    <div class="tarjeta-inner">
+
+        <div class="tarjeta-front">
+
+            <img class="animal-img" 
+                 src="${a.imagen}" 
+                 alt="${a.nombre}">
+
+            <h3>${a.nombre}</h3>
+
+            <ul>
+                ${a.rasgos.map(r => `<li>${r}</li>`).join('')}
+            </ul>
+
+        </div>
+        <div class="tarjeta-back">
+
+    <img src="back of card.png" alt="Seleccionada">
+
+</div>
+            `;
+            container.onclick = () => {
+                if (localStorage.getItem('animal_elegido')) {
+                    alert("Ya has seleccionado un animal.");
+                    return;
+                }
+                if (!container.classList.contains('ocupada')) {
+                    abrirModal(a);
+                }
+            };
+            contenedor.appendChild(container);
+        });
+
+        db.ref('estado_tarjetas').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            let conteoOcupadas = 0;
+            
+            document.querySelectorAll('.tarjeta-container').forEach(c => c.classList.remove('ocupada'));
+
+            for (let id in data) {
+                const card = document.getElementById("card-container-" + id);
+                if (card && data[id] === "ocupada") {
+                    card.classList.add('ocupada');
+                    conteoOcupadas++;
+                }
+            }
+            document.getElementById('contador-numero').innerText = conteoOcupadas;
+        });
+
+        function abrirModal(a, permitirSeleccion = true) {
+    const botonSeleccionar = document.querySelector(".btn-seleccionar");
+
+botonSeleccionar.style.display =
+    permitirSeleccion ? "block" : "none";    
+    overlay.classList.add("active");
+
+    idSeleccionadoGlobal = a.id;
+    document.getElementById('modal-animal-imagen').src = a.imagen;
+    document.getElementById('modal-animal-nombre').innerText = a.nombre;
+    document.getElementById('modal-animal-rasgos').innerHTML =
+        a.rasgos.map(r => `<li>${r}</li>`).join('');
+
+    document.getElementById('modal').style.display = 'flex';
+}
+function verMiTarjeta() {
+
+    const idGuardado = Number(localStorage.getItem("animal_elegido"));
+
+    if (!idGuardado) return;
+
+    const animal = animales.find(a => a.id === idGuardado);
+
+    if (!animal) return;
+
+    abrirModal(animal, false);
+}
+        function cerrarModal() {
+
+    overlay.classList.remove("active");
+
+    document.getElementById("modal").style.display = "none";
+
+}
+
+function confirmarSeleccion() {
+
+    const tarjetaRef = db.ref('estado_tarjetas/' + idSeleccionadoGlobal);
+
+    tarjetaRef.transaction((estadoActual) => {
+
+        if (estadoActual === null) {
+            return "ocupada";
+        }
+
+        return;
+
+    }).then((resultado) => {
+
+        if (resultado.committed) {
+
+            localStorage.setItem('animal_elegido', idSeleccionadoGlobal);
+
+            verificarEleccionPrevia();
+
+            cerrarModal();
+
+        } else {
+
+            alert("Este animal ya fue seleccionado por otra persona.");
+
+            cerrarModal();
+
+        }
+
+    });
+
+}
+
+function reiniciarTodo() {
+
+    const password = prompt("Clave de reinicio:");
+
+    if (password !== "100cias26") return;
+
+    const rondaRef = db.ref("ronda");
+
+    rondaRef.get().then((snapshot) => {
+
+        const nuevaRonda = (snapshot.val() || 0) + 1;
+
+        return db.ref().update({
+
+            ronda: nuevaRonda,
+            estado_tarjetas: null
+
+        });
+
+    });
+
+}
+
+db.ref("ronda").on("value", (snapshot) => {
+
+    const rondaActual = snapshot.val();
+
+    const ultimaRonda = localStorage.getItem("ultima_ronda");
+
+    if (ultimaRonda === null) {
+
+        localStorage.setItem("ultima_ronda", rondaActual);
+
+        return;
+
+    }
+
+   if (Number(ultimaRonda) !== Number(rondaActual)) {
+
+    localStorage.removeItem("animal_elegido");
+
+    localStorage.setItem("ultima_ronda", rondaActual);
+
+    verificarEleccionPrevia();
+
+}
+
+});
+ document
+    .getElementById("btn-ver-mi-animal")
+    .addEventListener("click", verMiTarjeta);
+
+verificarEleccionPrevia();
+        verificarEleccionPrevia();
+    </script>
+    <footer id="footer">
+
+   <p>Animal Cards Classroom Activity • Versión 1.0.0</p>
+
+    <p>© R. Centeno</p>
+
+</footer>
+</body>
+</html>
