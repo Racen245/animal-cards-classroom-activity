@@ -137,7 +137,7 @@
 
     margin: 0 0 6px 0;
 
-    font-size: 1.4rem;
+    font-size: 1.2rem;
 
     font-weight: 800;
 
@@ -152,7 +152,7 @@
 
     padding-left: 15px;
 
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 
     color: #34495e;
 
@@ -235,7 +235,7 @@
 
     width: 100%;
 
-    height: 45%;
+    height: 38%;
 
     object-fit: contain;
 
@@ -345,66 +345,320 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const animales = [
-    { 
-        id: 1, 
-        nombre: "León",
-        imagen: "assets/leon.png",
-        rasgos: [
-            "Melena abundante",
-            "Vive en manadas",
-            "Gran rugido",
-            "Depredador alfa"
-        ]
-    },
+    const animales = [
+{
+    id: 1,
+    nombre: "Jaguar",
+    imagen: "assets/jaguar.webp",
+    rasgos: [
+        "Liderazgo natural",
+        "Fuerza interior",
+        "Autoconfianza",
+        "Protección del territorio",
+        "Toma de decisiones firmes"
+    ]
+},
 
-    { 
-        id: 2, 
-        nombre: "Elefante",
-        imagen: "assets/elefante.png",
-        rasgos: [
-            "Colmillos de marfil",
-            "Gran trompa",
-            "Piel gruesa",
-            "Memoria excelente"
-        ]
-    },
+{
+    id: 2,
+    nombre: "Perezoso",
+    imagen: "assets/perezoso.webp",
+    rasgos: [
+        "Paciencia",
+        "Tranquilidad emocional",
+        "Vida consciente",
+        "Resistencia al estrés",
+        "Aceptación del ritmo propio"
+    ]
+},
 
-    { 
-        id: 3, 
-        nombre: "Delfín",
-        imagen: "assets/delfin.png",
-        rasgos: [
-            "Ecolocalización",
-            "Muy inteligente",
-            "Piel lisa",
-            "Nado veloz"
-        ]
-    },
+{
+    id: 3,
+    nombre: "Mono cariblanco",
+    imagen: "assets/mono_cariblanco.webp",
+    rasgos: [
+        "Ingenio",
+        "Curiosidad",
+        "Adaptabilidad",
+        "Sociabilidad",
+        "Creatividad"
+    ]
+},
 
-    { 
-        id: 4, 
-        nombre: "Búho",
-        imagen: "assets/buho.png",
-        rasgos: [
-            "Visión nocturna",
-            "Giro de cuello 270°",
-            "Vuelo silencioso",
-            "Cazador de roedores"
-        ]
-    },
+{
+    id: 4,
+    nombre: "Mono aullador",
+    imagen: "assets/mono_aullador.webp",
+    rasgos: [
+        "Expresión emocional",
+        "Comunicación",
+        "Presencia fuerte",
+        "Defensa del grupo"
+    ]
+},
 
-    { 
-        id: 5, 
-        nombre: "Tigre",
-        imagen: "assets/tigre.png",
-        rasgos: [
-            "Rayas únicas",
-            "Nadador experto",
-            "Solitario",
-            "Fuerza extrema"
-        ]
-    }
+{
+    id: 5,
+    nombre: "Danta",
+    imagen: "assets/danta.webp",
+    rasgos: [
+        "Constancia",
+        "Serenidad",
+        "Fortaleza silenciosa",
+        "Perseverancia"
+    ]
+},
+
+{
+    id: 6,
+    nombre: "Yigüirro",
+    imagen: "assets/yiguirro.webp",
+    rasgos: [
+        "Esperanza",
+        "Renovación",
+        "Optimismo",
+        "Inicio de ciclos nuevos"
+    ]
+},
+
+{
+    id: 7,
+    nombre: "Quetzal",
+    imagen: "assets/quetzal.webp",
+    rasgos: [
+        "Libertad",
+        "Dignidad",
+        "Belleza interior",
+        "Espiritualidad",
+        "Amor por la independencia"
+    ]
+},
+
+{
+    id: 8,
+    nombre: "Lapa roja",
+    imagen: "assets/lapa_roja.webp",
+    rasgos: [
+        "Comunicación",
+        "Alegría",
+        "Trabajo en pareja",
+        "Solidaridad",
+        "Expresión auténtica"
+    ]
+},
+
+{
+    id: 9,
+    nombre: "Tucán",
+    imagen: "assets/tucan.webp",
+    rasgos: [
+        "Creatividad",
+        "Originalidad",
+        "Carisma",
+        "Adaptación al entorno"
+    ]
+},
+
+{
+    id: 10,
+    nombre: "Colibrí",
+    imagen: "assets/colibri.webp",
+    rasgos: [
+        "Energía",
+        "Perseverancia",
+        "Alegría cotidiana",
+        "Enfoque en los pequeños logros"
+    ]
+},
+
+{
+    id: 11,
+    nombre: "Rana de ojos rojos",
+    imagen: "assets/rana_ojos_rojos.webp",
+    rasgos: [
+        "Sensibilidad",
+        "Capacidad de alerta",
+        "Adaptación al cambio",
+        "Identidad propia"
+    ]
+},
+
+{
+    id: 12,
+    nombre: "Iguana verde",
+    imagen: "assets/iguana_verde.webp",
+    rasgos: [
+        "Adaptabilidad",
+        "Resiliencia",
+        "Calma exterior",
+        "Observación del entorno"
+    ]
+},
+
+{
+    id: 13,
+    nombre: "Tortuga marina",
+    imagen: "assets/tortuga_marina.webp",
+    rasgos: [
+        "Perseverancia",
+        "Longevidad",
+        "Paciencia",
+        "Cumplimiento de metas a largo plazo"
+    ]
+},
+
+{
+    id: 14,
+    nombre: "Delfín",
+    imagen: "assets/delfin.webp",
+    rasgos: [
+        "Empatía",
+        "Inteligencia social",
+        "Cooperación",
+        "Comunicación efectiva"
+    ]
+},
+
+{
+    id: 15,
+    nombre: "Ballena jorobada",
+    imagen: "assets/ballena_jorobada.webp",
+    rasgos: [
+        "Protección familiar",
+        "Fuerza emocional",
+        "Migración consciente",
+        "Cuidado del grupo"
+    ]
+},
+
+{
+    id: 16,
+    nombre: "Mariposa morfo azul",
+    imagen: "assets/mariposa_morfo_azul.webp",
+    rasgos: [
+        "Transformación",
+        "Belleza interior",
+        "Cambio positivo",
+        "Evolución personal"
+    ]
+},
+
+{
+    id: 17,
+    nombre: "Hormiga cortadora",
+    imagen: "assets/hormiga_cortadora.webp",
+    rasgos: [
+        "Trabajo en equipo",
+        "Responsabilidad",
+        "Esfuerzo constante",
+        "Organización"
+    ]
+},
+
+{
+    id: 18,
+    nombre: "Mapache",
+    imagen: "assets/mapache.webp",
+    rasgos: [
+        "Ingenio",
+        "Capacidad para resolver problemas",
+        "Curiosidad",
+        "Adaptabilidad",
+        "Aprovechamiento creativo de recursos"
+    ]
+},
+
+{
+    id: 19,
+    nombre: "Iguana",
+    imagen: "assets/iguana.webp",
+    rasgos: [
+        "Paciencia",
+        "Observación del entorno",
+        "Autocontrol",
+        "Adaptación al cambio",
+        "Calma exterior"
+    ]
+},
+
+{
+    id: 20,
+    nombre: "Libélula",
+    imagen: "assets/libelula.webp",
+    rasgos: [
+        "Transformación",
+        "Ligereza emocional",
+        "Flexibilidad",
+        "Capacidad de cambio",
+        "Vivir el presente"
+    ]
+},
+
+{
+    id: 21,
+    nombre: "Luciérnaga",
+    imagen: "assets/luciernaga.webp",
+    rasgos: [
+        "Esperanza",
+        "Luz en momentos de oscuridad",
+        "Inspiración",
+        "Sensibilidad",
+        "Valor de los pequeños aportes"
+    ]
+},
+
+{
+    id: 22,
+    nombre: "Pizote",
+    imagen: "assets/pizote.webp",
+    rasgos: [
+        "Trabajo en equipo",
+        "Sociabilidad",
+        "Cooperación",
+        "Curiosidad activa",
+        "Organización grupal"
+    ]
+},
+
+{
+    id: 23,
+    nombre: "Serpiente lora",
+    imagen: "assets/serpiente_lora.webp",
+    rasgos: [
+        "Alerta",
+        "Precaución",
+        "Observación silenciosa",
+        "Autoprotección",
+        "Respeto por los límites"
+    ]
+},
+
+{
+    id: 24,
+    nombre: "Terciopelo",
+    imagen: "assets/terciopelo.webp",
+    rasgos: [
+        "Poder contenido",
+        "Respeto",
+        "Defensa del espacio personal",
+        "Prudencia",
+        "Conciencia del riesgo"
+    ]
+},
+
+{
+    id: 25,
+    nombre: "Tepezcuintle",
+    imagen: "assets/tepezcuintle.webp",
+    rasgos: [
+        "Prudencia",
+        "Discreción",
+        "Autoprotección",
+        "Inteligencia práctica",
+        "Capacidad de adaptarse sin exponerse",
+        "Fortaleza silenciosa"
+    ]
+}
 ];
 
         document.getElementById('contador-info').innerHTML = `Animales elegidos: <span id="contador-numero">0</span> / ${animales.length}`;
